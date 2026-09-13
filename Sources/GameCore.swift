@@ -507,7 +507,7 @@ final class GameModel {
                 discover("testimony", replay: true)
                 snapshot.anomaly = 5
                 snapshot.anomalyTime = 7
-                show("03:17 / VOSS: “After four, send my voice back to the missing room. Leave ten cells for the line.”", for: 12)
+                show("03:17 / VOSS: “After four, send the witness to the missing room. Leave ten cells for the line.”", for: 12)
             } else {
                 discover("incident", replay: true)
                 show("17 APR 1994 / Evacuation announcement replaced with familiar voices. Archive continuity: maintained.", for: 10)

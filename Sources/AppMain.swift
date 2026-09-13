@@ -25,6 +25,7 @@ final class GameController: NSObject, NSWindowDelegate {
     var didRecordVictory = false
     #if DEBUG
     var qa: QARunner?
+    let renderProbe = RenderProbe()
     #endif
 
     override init() {
@@ -61,6 +62,9 @@ final class GameController: NSObject, NSWindowDelegate {
         view.preferredFramesPerSecond = 60
         view.antialiasingMode = .multisampling2X
         view.allowsCameraControl = false
+        #if DEBUG
+        view.delegate = renderProbe
+        #endif
         container.addSubview(view)
         hud.frame = container.bounds
         hud.autoresizingMask = [.width, .height]
@@ -103,7 +107,7 @@ final class GameController: NSObject, NSWindowDelegate {
         lookX += (targetLookX - lookX) * smoothing
         lookY += (targetLookY - lookY) * smoothing
         world.update(s, time: now, lookX: lookX * saved.settings.sensitivity, lookY: lookY * saved.settings.sensitivity)
-        let desiredFPS = s.monitor && s.phase == .playing ? 14 : 60
+        let desiredFPS = s.monitor && s.phase == .playing ? 12 : 60
         if view.preferredFramesPerSecond != desiredFPS { view.preferredFramesPerSecond = desiredFPS }
         audio.update(s)
         hud.snapshot = s

@@ -4,7 +4,9 @@ A native macOS survival-horror game set inside the closed **Morrow Listening Ins
 
 ## Play
 
-Open **`build/Hollow Signal.app`** in Finder. No browser, engine installation, internet connection, or downloaded assets are required. The release executable contains Apple Silicon and Intel slices and requires macOS 12 or newer. Apple Silicon is the primary tested platform.
+Open **`build/Hollow Signal.app`** in Finder. No browser, engine installation, internet connection, or downloaded assets are required. The release executable contains Apple Silicon (macOS 12+) and Intel (macOS 14+) slices. Apple Silicon is the primary tested platform.
+
+A ready-to-run copy is also installed at `~/Applications/Hollow Signal.app`. The portable release is `build/Hollow-Signal-macOS-universal.zip`.
 
 Choose **Begin the Night**, read the handover, then **Take the Chair**. Progress and settings save automatically. An unfinished shift restarts from midnight; evidence survives failed attempts. Completing a shift unlocks Overtime. There are two endings and eight recoverable records.
 
@@ -54,13 +56,15 @@ For development and tests:
 "build/Hollow Signal.app/Contents/MacOS/HollowSignal" --ui-smoke
 ```
 
+Add `--record-demo` to the smoke command to record a short, spoiler-free native-renderer walkthrough under `build/Walkthrough/gameplay.mov`. Recording is a development-only function.
+
 The debug UI smoke run uses an isolated temporary save directory, exercises the real controller and renderer, and writes screenshots and `integration.json` to `build/qa`. Debug-only state controls are excluded from the release executable. **Control–T** advances one minute in a debug build; it is intentionally unsafe without understanding the simulation. See `Docs/TESTING.md` for final verification and limitations.
 
 ## Architecture
 
 - `Shared.swift`: typed phases, actions, snapshots, settings and progress.
 - `GameCore.swift`: deterministic fixed-step simulation, three AI state machines, routes, resources, hour events, counterplay, lore triggers and both endings. Independent of graphics and audio.
-- `WorldRenderer.swift`: original modeled industrial spaces, creatures, procedural materials, lights, shadows, animated equipment, particles, fog and SceneKit camera control. One view renders the active location; camera feeds run at 14 FPS.
+- `WorldRenderer.swift`: original modeled industrial spaces, creatures, procedural materials, lights, shadows, animated equipment, particles, fog and SceneKit camera control. One view renders the active location; camera feeds run at 12 FPS.
 - `GameHUD.swift`: custom AppKit equipment interface, surveillance map, menus, settings and readable evidence panels, scaled for Retina and different window sizes.
 - `AppMain.swift`: native application lifecycle, input routing, pause on loss of focus, simulation/render integration and persistence.
 - `AudioSystem.swift`: bounded procedural sound buffers, layered ambience and stereo entity/equipment cues through AVAudioEngine.

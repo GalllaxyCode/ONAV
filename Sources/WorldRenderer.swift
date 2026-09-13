@@ -37,6 +37,8 @@ final class WorldRenderer {
     private var paper: SCNMaterial!
     private var wood: SCNMaterial!
     private var lastMonitor = false
+    private let dawnLight = SCNLight()
+    private var dawnStart: Double?
     private var smoothLookX: Double = 0
     private var smoothLookY: Double = 0
 
@@ -70,6 +72,14 @@ final class WorldRenderer {
         scene.rootNode.addChildNode(cameraNode)
         scene.rootNode.addChildNode(office)
         buildOffice()
+        let dawn = SCNNode()
+        dawnLight.type = .omni
+        dawnLight.color = NSColor(calibratedRed: 1, green: 0.70, blue: 0.43, alpha: 1)
+        dawnLight.intensity = 0
+        dawnLight.attenuationEndDistance = 16
+        dawn.light = dawnLight
+        dawn.position = SCNVector3(0, 2.9, 1.2)
+        office.addChildNode(dawn)
         for room in Room.allCases { buildRoom(room) }
         for kind in EntityKind.allCases {
             let node: SCNNode
@@ -98,6 +108,10 @@ final class WorldRenderer {
     }
 
     func update(_ snapshot: GameSnapshot, time: Double, lookX: Double, lookY: Double) {
+        if snapshot.phase == .victory {
+            if dawnStart == nil { dawnStart = time }
+            dawnLight.intensity = min(650, max(0, time - (dawnStart ?? time)) * 110)
+        } else { dawnStart = nil; dawnLight.intensity = 0 }
         let remote = snapshot.monitor && (snapshot.phase == .playing || snapshot.phase == .paused)
         office.isHidden = remote
         for (room, root) in roomRoots { root.isHidden = !remote || room != snapshot.selectedCamera }
@@ -108,13 +122,13 @@ final class WorldRenderer {
         if remote, let pos = cameraPositions[snapshot.selectedCamera], let target = cameraTargets[snapshot.selectedCamera] {
             let jitter = settings.reducedFlashes ? 0 : sin((time * 18).rounded(.down) * 8.43) * 0.0012
             cameraNode.position = SCNVector3(pos.x + CGFloat(jitter), pos.y, pos.z)
-            cameraNode.look(at: target)
+            cameraNode.look(at: target, up: SCNVector3(0, 1, 0), localFront: SCNVector3(0, 0, -1))
             cameraNode.camera?.fieldOfView = snapshot.selectedCamera == .duct ? 78 : 70
             scene.fogStartDistance = 3
             scene.fogEndDistance = snapshot.selectedCamera == .duct ? 13 : 23
         } else {
             cameraNode.position = SCNVector3(CGFloat(smoothLookX * 0.06), 1.62 + CGFloat(smoothLookY * 0.025), 3.65)
-            cameraNode.look(at: SCNVector3(CGFloat(smoothLookX * 1.35), 1.48 + CGFloat(smoothLookY * 0.85), -4))
+            cameraNode.look(at: SCNVector3(CGFloat(smoothLookX * 1.35), 1.48 + CGFloat(smoothLookY * 0.85), -4), up: SCNVector3(0, 1, 0), localFront: SCNVector3(0, 0, -1))
             cameraNode.camera?.fieldOfView = 65
             scene.fogStartDistance = 7
             scene.fogEndDistance = 25
@@ -147,10 +161,11 @@ final class WorldRenderer {
             guard let creature = creatures[kind] else { continue }
             creature.isHidden = true
             creature.scale = SCNVector3(1, 1, 1)
+            if snapshot.phase == .victory || snapshot.phase == .menu { continue }
             guard let entity = snapshot.entities.first(where: { $0.kind == kind }) else { continue }
             creature.eulerAngles = SCNVector3Zero
             if remote {
-                if entity.room == snapshot.selectedCamera, entity.state != .dormant,
+                if entity.room == snapshot.selectedCamera, (entity.state != .dormant || kind == .surveyor),
                    let anchor = entityAnchors[entity.room] {
                     creature.isHidden = false
                     creature.position = anchor
@@ -344,7 +359,7 @@ final class WorldRenderer {
         }
         image.unlockFocus()
         let m = SCNMaterial(); m.diffuse.contents = image; m.roughness.contents = 0.85
-        if emission > 0 { m.emission.contents = image; m.emission.intensity = emission }
+        m.emission.contents = image; m.emission.intensity = max(0.045, emission)
         let node = box(parent, (width, height, 0.012), (p.x,p.y,p.z), m, bevel: 0.004)
         return node
     }

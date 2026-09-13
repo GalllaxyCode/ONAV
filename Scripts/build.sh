@@ -11,7 +11,9 @@ if [[ "$MODE" == "debug" ]]; then
     cp build/HollowSignal-debug "$APP/Contents/MacOS/HollowSignal"
 else
     swiftc -O -whole-module-optimization -target arm64-apple-macosx12.0 "${FLAGS[@]}" Sources/*.swift -o build/HollowSignal-arm64
-    swiftc -O -whole-module-optimization -target x86_64-apple-macosx12.0 "${FLAGS[@]}" Sources/*.swift -o build/HollowSignal-x86_64
+    # Recent Apple toolchains no longer ship Intel Swift back-deployment archives.
+    # Sonoma supplies the required Intel runtime directly; Apple Silicon keeps macOS 12 support.
+    swiftc -O -whole-module-optimization -target x86_64-apple-macosx14.0 "${FLAGS[@]}" Sources/*.swift -o build/HollowSignal-x86_64
     lipo -create build/HollowSignal-arm64 build/HollowSignal-x86_64 -output "$APP/Contents/MacOS/HollowSignal"
 fi
 cp Resources/Info.plist "$APP/Contents/Info.plist"

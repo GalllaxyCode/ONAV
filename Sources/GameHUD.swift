@@ -199,7 +199,7 @@ final class GameHUD: NSView {
         if snapshot.monitor {
             text("CAM \(snapshot.selectedCamera.code)", 65, 166, size: 37, color: ink, weight: .light)
             label(snapshot.selectedCamera.label, 68, 216, color: ink)
-            text(snapshot.signalLost ? "SIGNAL LOST  /  RESET NETWORK [X]" : (snapshot.transition > 0 ? "ACQUIRING CARRIER…" : "●  LIVE  /  14 FPS  /  ARCHIVE LINK"), 67, 251, size: 12, color: snapshot.signalLost ? red : muted)
+            text(snapshot.signalLost ? "SIGNAL LOST  /  RESET NETWORK [X]" : (snapshot.transition > 0 ? "ACQUIRING CARRIER…" : "●  LIVE  /  12 FPS  /  ARCHIVE LINK"), 67, 251, size: 12, color: snapshot.signalLost ? red : muted)
             drawMap()
             label("LOCAL RECORDING  /  17.04.94", 66, 687)
             text(snapshot.clockText, 67, 713, size: 20, color: ink)
@@ -224,8 +224,8 @@ final class GameHUD: NSView {
             if snapshot.blackout { text("BACKUP EXHAUSTED", 370, 356, size: 40, color: red.withAlphaComponent(0.7), width: 700, align: .center, spacing: 6) }
         }
         if settings.subtitles && snapshot.messageTime > 0 && !snapshot.message.isEmpty {
-            panel(CGRect(x: 357, y: 696, width: 726, height: 39), opacity: 0.92)
-            text(snapshot.message, 373, 706, size: 12, color: ink, width: 694, align: .center)
+            panel(CGRect(x: 330, y: 685, width: 680, height: 50), opacity: 0.92)
+            text(snapshot.message, 346, 695, size: 11, color: ink, width: 648, align: .center)
         }
         drawConsole()
         if enteringCode { drawCode() }
@@ -233,7 +233,7 @@ final class GameHUD: NSView {
 
     private func drawTelemetry() {
         panel(CGRect(x: 40, y: 30, width: 516, height: 88), opacity: 0.89)
-        label("MAINS RESERVE", 61, 47)
+        label("RESERVE", 61, 47)
         text(String(format: "%02.0f", max(0, snapshot.power)) + "%", 62, 65, size: 26, color: snapshot.power < 20 ? red : ink, weight: .light)
         bar(156, 89, width: 113, value: snapshot.power / 100, color: snapshot.power < 20 ? red : amber)
         label("LOAD", 162, 48)
