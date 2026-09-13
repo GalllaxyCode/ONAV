@@ -1,0 +1,15 @@
+# Working interfaces
+
+Shared.swift owns shared enums and value types. Native AppKit + SceneKit, Swift 5 language mode, macOS 12 target. No external dependencies.
+
+GameModel (Foundation-only): `init(seed: UInt64 = ..., discovered: Set<String> = [])`; read `snapshot: GameSnapshot`; `start(difficulty: Difficulty)`; `update(dt: Double)`; `act(_ action: GameAction)`; `drainEvents() -> [GameEvent]`; `returnToMenu()`. Tests can use a dedicated debug configuration enabled by `#if DEBUG`. Night is 480 real seconds, standard. Resource rates per second.
+
+WorldRenderer (AppKit/SceneKit): `init()`; public `scene: SCNScene`, `cameraNode: SCNNode`; `update(_ snapshot: GameSnapshot, time: Double, lookX: Double, lookY: Double)`; `apply(settings: GameSettings)`; public `onScreenText: String` optional only if useful. Rendering must avoid SpriteKit HUD (root owns AppKit HUD). SceneKit view uses cameraNode as pointOfView. Camera switching moves one camera through built rooms; only selected feed rendered.
+
+AudioSystem (AVFoundation): `init()`; `start()`; `stop()`; `apply(settings: GameSettings)`; `update(_ snapshot: GameSnapshot)`; `handle(_ events: [GameEvent])`. Generated buffers or bundled original WAV files. No microphone access.
+
+SaveStore: `init(directory: URL? = nil)`; `load() -> SaveData`; `save(_ data: SaveData)` robust corrupt fallback and atomic saving. Source `LoreCatalog.entries: [LoreEntry]`. Story canon: MORROW Listening Institute, closed after 17 April 1994 incident. Researcher Ada Voss; founder Elias Morrow. The operator is Mara Vale, former child participant returning to recover her mother's recorded testimony. Machines contain learned acoustic behavior, not murdered children. Human voices were used to hide evacuation orders and prioritize archival continuity. Entities enact broken safety protocols. Code 0417 = absent room 04 + seventeen withheld evacuation calls. Camera 04 Return Chamber only unlocks by entering 0417. At 3:17 inspect resonance for deep clue; once unlocked, lure in hidden chamber at hour >= 4 with power >= 10 arms alternate ending. Primary gameplay clues must explain this in fragments. Public lore entries contain evidence, not omniscient explanation. Private lore document is not bundled.
+
+Model lore ids: desk, gallery, maintenance, incident, return, testimony, blackout, ending. Root HUD inspect [E] calls engine which awards clue depending room/context. Desk offered in office; gallery in gallery; maintenance in workshop; incident in resonance; return in hidden chamber; testimony special 3:17 resonance window (±4 game minutes); blackout when power <5. Code input supplied by UI.
+
+Entities: Surveyor route gallery -> workshop -> westPassage, stalled while its live camera observed; attacks left shutter after clear grace period. Chorus route intake -> resonance -> eastPassage, camera relay lure attracts it only to a neighboring safe room, never office; ventilation noise accelerates it; right shutter protection. Seam begins duct, pressure rises with heat; ventilation purge drives it back; shutters ineffective. Three distinct grace periods, recovery and proactive counterplay. No same-rule entities.
