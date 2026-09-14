@@ -31,7 +31,7 @@ A SceneKit render callback measured approximately 60 FPS for the office, menus, 
 
 ## Live release checks
 
-The signed `.app` was launched through the native application launcher. Manual keyboard interaction verified new-game entry, camera selection, visible Surveyor, evidence inspection and pause, both shutters, lights, ventilation, a relay pulse, duct view, and pause. The recorded walkthrough is under `build/Walkthrough`.
+The signed `.app` was launched through the native application launcher. Manual keyboard and mouse interaction verified new-game entry, camera selection, visible Surveyor and its movement to Fabrication, evidence inspection and pause, both shutters, lights, ventilation, a relay pulse, duct view, and pause. The spoiler-free video under `build/Walkthrough/gameplay.mov` records the actual native renderer and HUD during a separate scripted integration run; it is not a recording of the manual input session. Its frames were inspected after recording.
 
 Visual inspection led to changes for wall visibility, physically scaled wear textures, readable signs, evidence fitting, overlapping HUD labels, subtitle/map separation, a visible dormant Surveyor for onboarding, and stable camera orientation when returning to the office. Dawn introduces warm light and removes active creature poses. The release bundle is verified with `codesign --verify --deep --strict` and contains both CPU architectures.
 
